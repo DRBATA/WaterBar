@@ -83,7 +83,7 @@ export default function Home() {
     <div 
       className="flex min-h-screen flex-col items-center justify-center p-4 overflow-hidden relative"
       style={{
-        background: `linear-gradient(rgba(30, 58, 138, 0.7), rgba(30, 58, 138, 0.7)), url('/lib/background.png')`,
+        background: `linear-gradient(rgba(30, 58, 138, 0.7), rgba(30, 58, 138, 0.7)), url('/background.png')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed'

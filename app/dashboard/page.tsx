@@ -104,7 +104,7 @@ export default function Dashboard() {
     <div 
       className="min-h-screen p-8"
       style={{
-        background: `linear-gradient(rgba(30, 58, 138, 0.7), rgba(30, 58, 138, 0.7)), url('/lib/background.png')`,
+        background: `linear-gradient(rgba(30, 58, 138, 0.7), rgba(30, 58, 138, 0.7)), url('/background.png')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed'
