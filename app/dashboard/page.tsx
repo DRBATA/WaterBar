@@ -101,7 +101,15 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-blue-900 p-8">
+    <div 
+      className="min-h-screen p-8"
+      style={{
+        background: `linear-gradient(rgba(30, 58, 138, 0.7), rgba(30, 58, 138, 0.7)), url('/lib/background.png')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}
+    >
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-2xl text-white">Welcome, {user.name}!</h1>
