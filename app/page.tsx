@@ -1,6 +1,6 @@
 'use client'
 
-import { Droplet, SailboatIcon as Yacht, Eye } from 'lucide-react'
+import { SailboatIcon as Yacht } from 'lucide-react'
 import { Button } from "../components/ui/button"
 import { Input } from "../components/ui/input"
 import { useState, useEffect } from 'react'

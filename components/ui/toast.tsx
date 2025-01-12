@@ -1,6 +1,31 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, createContext, useContext } from 'react'
+
+interface ToastContextType {
+  show: (message: string, type: 'success' | 'error') => void
+}
+
+const ToastContext = createContext<ToastContextType | null>(null)
+
+export function ToastProvider({ children }: { children: React.ReactNode }) {
+  const { show, ToastContainer } = useToast()
+
+  return (
+    <ToastContext.Provider value={{ show }}>
+      {children}
+      <ToastContainer />
+    </ToastContext.Provider>
+  )
+}
+
+export function useToastContext() {
+  const context = useContext(ToastContext)
+  if (!context) {
+    throw new Error('useToastContext must be used within a ToastProvider')
+  }
+  return context
+}
 
 interface Toast {
   id: string
