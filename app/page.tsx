@@ -6,11 +6,14 @@ import { Input } from "../components/ui/input"
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth-context'
+import { YachtBookingModal } from '@/components/modals/yacht-booking-modal'
+import { WellnessModal } from '@/components/modals/wellness-modal'
 
 export default function Home() {
   const router = useRouter()
   const { user, login, register } = useAuth()
   const [isLogin, setIsLogin] = useState(true)
+  const [activeModal, setActiveModal] = useState<'yacht' | 'wellness' | null>(null)
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -72,19 +75,43 @@ export default function Home() {
 
         <div className="flex gap-12 mb-16">
           {[
-            { Icon: Droplet, delay: 'delay-2' },
-            { Icon: Yacht, delay: 'delay-3' },
-            { Icon: Eye, delay: 'delay-4' }
-          ].map(({ Icon, delay }, index) => (
+            { 
+              Icon: Yacht, 
+              delay: 'delay-2',
+              onClick: () => user ? setActiveModal('yacht') : setError('Please log in to book'),
+              title: 'Book Morning Party'
+            },
+            { 
+              Icon: Eye, 
+              delay: 'delay-3',
+              onClick: () => user ? setActiveModal('wellness') : setError('Please log in to make requests'),
+              title: 'Request Wellness Experience & Drinks'
+            }
+          ].map(({ Icon, delay, onClick, title }, index) => (
             <div 
               key={index}
               className={`icon-wrapper fade-in ${delay}`}
+              onClick={onClick}
+              role="button"
+              tabIndex={0}
+              title={title}
+              aria-label={title}
             >
               <Icon 
-                className="w-16 h-16 text-white transition-transform hover:scale-110 hover:-translate-y-1 duration-300 relative z-10" 
+                className="w-16 h-16 text-white transition-transform hover:scale-110 hover:-translate-y-1 duration-300 relative z-10 cursor-pointer" 
               />
             </div>
           ))}
+
+          {/* Modals */}
+          <YachtBookingModal
+            isOpen={activeModal === 'yacht'}
+            onClose={() => setActiveModal(null)}
+          />
+          <WellnessModal
+            isOpen={activeModal === 'wellness'}
+            onClose={() => setActiveModal(null)}
+          />
         </div>
 
         <div className={`form-container fade-in delay-5`}>
