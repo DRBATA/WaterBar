@@ -81,7 +81,6 @@ export default function Home() {
             onClick={() => user ? setActiveModal('yacht') : setError('Please log in to book')}
             role="button"
             tabIndex={0}
-            title="Book Morning Party"
             aria-label="Book Morning Party"
           >
             <Yacht className="w-16 h-16 text-white transition-transform hover:scale-110 hover:-translate-y-1 duration-300 relative z-10 cursor-pointer" />
@@ -94,7 +93,6 @@ export default function Home() {
             onClick={() => user ? window.open('https://fpvbzfybmgofevvv.vercel.app', '_blank') : setError('Please log in to track hydration')}
             role="button"
             tabIndex={0}
-            title="Track Hydration"
             aria-label="Track Hydration"
           >
             <video 
@@ -102,7 +100,7 @@ export default function Home() {
               loop 
               muted 
               playsInline
-              className="w-full h-full object-cover cursor-pointer transition-transform hover:scale-110 hover:-translate-y-1 duration-300"
+              className="w-full h-full object-cover cursor-pointer transition-transform hover:scale-110 hover:-translate-y-1 duration-300 mix-blend-screen"
             >
               <source src="/loading.mp4" type="video/mp4" />
             </video>
@@ -115,7 +113,6 @@ export default function Home() {
             onClick={() => user ? setActiveModal('wellness') : setError('Please log in to make requests')}
             role="button"
             tabIndex={0}
-            title="Request Wellness Experience & Drinks"
             aria-label="Request Wellness Experience & Drinks"
           >
             <svg 
@@ -134,6 +131,17 @@ export default function Home() {
               <line x1="14" y1="2" x2="14" y2="4" />
             </svg>
           </div>
+
+          {/* Modals */}
+          <YachtBookingModal
+            isOpen={activeModal === 'yacht'}
+            onClose={() => setActiveModal(null)}
+          />
+          <WellnessModal
+            isOpen={activeModal === 'wellness'}
+            onClose={() => setActiveModal(null)}
+          />
+        </div>
 
         {/* Add tooltip styles */}
         <style jsx>{`
@@ -163,17 +171,6 @@ export default function Home() {
             transform: translateX(-50%) translateY(0);
           }
         `}</style>
-
-          {/* Modals */}
-          <YachtBookingModal
-            isOpen={activeModal === 'yacht'}
-            onClose={() => setActiveModal(null)}
-          />
-          <WellnessModal
-            isOpen={activeModal === 'wellness'}
-            onClose={() => setActiveModal(null)}
-          />
-        </div>
 
         <div className={`form-container fade-in delay-5`}>
           <div className="flex gap-2 mb-6">
