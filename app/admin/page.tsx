@@ -3,7 +3,6 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useAuth } from '@/lib/auth-context'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
-import { useToast } from '@/components/ui/toast'
 
 type BookingStatus = 'ACTIVE' | 'COMPLETED' | 'CANCELLED'
 
@@ -24,11 +23,9 @@ interface Booking {
 interface FilterOptions {
   status: BookingStatus | 'ALL'
   dateRange: 'ALL' | 'TODAY' | 'UPCOMING' | 'PAST'
-  sort: 'date-asc' | 'date-desc' | 'status'
 }
 
 export default function AdminPage() {
-  const { show, ToastContainer } = useToast()
   const { user } = useAuth()
   const [bookings, setBookings] = useState<Booking[]>([])
   const [filteredBookings, setFilteredBookings] = useState<Booking[]>([])
@@ -38,8 +35,7 @@ export default function AdminPage() {
   const [updateError, setUpdateError] = useState<string | null>(null)
   const [filters, setFilters] = useState<FilterOptions>({
     status: 'ALL',
-    dateRange: 'UPCOMING',
-    sort: 'date-desc'
+    dateRange: 'UPCOMING'
   })
 
   // Apply filters to bookings
@@ -71,21 +67,6 @@ export default function AdminPage() {
         break
     }
 
-    // Apply sorting
-    switch (filters.sort) {
-      case 'date-asc':
-        filtered.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-        break
-      case 'date-desc':
-        filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-        break
-      case 'status':
-        filtered.sort((a, b) => {
-          const statusOrder = { ACTIVE: 0, UPCOMING: 1, COMPLETED: 2, CANCELLED: 3 }
-          return statusOrder[a.status] - statusOrder[b.status]
-        })
-        break
-    }
     setFilteredBookings(filtered)
   }, [bookings, filters])
 
@@ -99,51 +80,17 @@ export default function AdminPage() {
       }
 
       setBookings(data)
-      show('Bookings refreshed successfully', 'success')
     } catch (error) {
       console.error('Error fetching bookings:', error)
       setError('Failed to load bookings')
-      show('Failed to refresh bookings', 'error')
     } finally {
       setLoading(false)
     }
-  }, [show])
+  }, [])
 
   useEffect(() => {
     fetchBookings()
   }, [fetchBookings])
-
-  const handleStatusUpdate = useCallback(async (bookingId: string, newStatus: BookingStatus) => {
-    setUpdateError(null)
-    setUpdateLoading(bookingId)
-    try {
-      const response = await fetch(`/api/admin/bookings?id=${bookingId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status: newStatus }),
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to update status')
-      }
-
-      const updatedBooking = await response.json()
-      setBookings(prev => 
-        prev.map(b => 
-          b.id === updatedBooking.id ? updatedBooking : b
-        )
-      )
-      show('Booking status updated successfully', 'success')
-    } catch (error) {
-      console.error('Failed to update booking status:', error)
-      setUpdateError(bookingId)
-      show('Failed to update booking status', 'error')
-    } finally {
-      setUpdateLoading(null)
-    }
-  }, [show])
 
   if (!user || user.role !== 'STAFF') {
     return (
@@ -226,22 +173,7 @@ export default function AdminPage() {
                   <option value="PAST">Past</option>
                 </select>
               </div>
-              <div className="flex flex-col">
-                <label htmlFor="sort-filter" className="sr-only">Sort bookings</label>
-                <select
-                  id="sort-filter"
-                  value={filters.sort}
-                  onChange={(e) => setFilters(prev => ({ ...prev, sort: e.target.value as FilterOptions['sort'] }))}
-                  className="bg-white/10 text-white border-white/20 rounded-lg px-3 py-1"
-                  aria-label="Sort bookings"
-                >
-                  <option value="date-desc">Newest first</option>
-                  <option value="date-asc">Oldest first</option>
-                  <option value="status">By status</option>
-                </select>
-              </div>
             </div>
-          </div>
           </div>
         </div>
 
@@ -283,7 +215,36 @@ export default function AdminPage() {
                       <select
                         id={`booking-status-${booking.id}`}
                         value={booking.status}
-                        onChange={(e) => handleStatusUpdate(booking.id, e.target.value as BookingStatus)}
+                        onChange={async (e) => {
+                          setUpdateError(null)
+                          setUpdateLoading(booking.id)
+                          const newStatus = e.target.value as BookingStatus
+                          try {
+                            const response = await fetch(`/api/admin/bookings?id=${booking.id}`, {
+                              method: 'PATCH',
+                              headers: {
+                                'Content-Type': 'application/json',
+                              },
+                              body: JSON.stringify({ status: newStatus }),
+                            })
+
+                            if (!response.ok) {
+                              throw new Error('Failed to update status')
+                            }
+
+                            const updatedBooking = await response.json()
+                            setBookings(prev => 
+                              prev.map(b => 
+                                b.id === updatedBooking.id ? updatedBooking : b
+                              )
+                            )
+                          } catch (error) {
+                            console.error('Failed to update booking status:', error)
+                            setUpdateError(booking.id)
+                          } finally {
+                            setUpdateLoading(null)
+                          }
+                        }}
                         className={`
                           px-2 py-1 rounded text-sm relative
                           ${updateLoading === booking.id ? 'opacity-50 cursor-wait' : ''}
@@ -331,7 +292,6 @@ export default function AdminPage() {
           </div>
         )}
       </div>
-      <ToastContainer />
     </div>
   )
 }
