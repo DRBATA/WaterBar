@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getServerSession } from 'next-auth/next'
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
     // Get user from session
     const session = await getServerSession()
@@ -69,13 +69,6 @@ export async function PATCH(request: Request) {
     const body = await request.json()
     const { status } = body
 
-    if (!bookingId || !status) {
-      return NextResponse.json(
-        { message: 'Booking ID and status are required' },
-        { status: 400 }
-      )
-    }
-
     // Get user from session
     const session = await getServerSession()
     if (!session?.user?.email) {
@@ -94,6 +87,13 @@ export async function PATCH(request: Request) {
       return NextResponse.json(
         { message: 'Access denied' },
         { status: 403 }
+      )
+    }
+
+    if (!bookingId || !status) {
+      return NextResponse.json(
+        { message: 'Booking ID and status are required' },
+        { status: 400 }
       )
     }
 

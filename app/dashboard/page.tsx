@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth-context'
 import { Button } from "@/components/ui/button"
@@ -19,26 +19,25 @@ export default function Dashboard() {
   const [bookingDate, setBookingDate] = useState('')
   const [bookingError, setBookingError] = useState('')
 
-  useEffect(() => {
-    if (!user) {
-      router.push('/')
-      return
-    }
-
-    fetchBookings()
-  }, [user, router])
-
-  const fetchBookings = async () => {
+  const fetchBookings = useCallback(async () => {
     try {
       const response = await fetch(`/api/bookings?userId=${user?.id}`)
       const data = await response.json()
-      setBookings(data.bookings)
+      setBookings(data)
     } catch (error) {
       console.error('Failed to fetch bookings:', error)
     } finally {
       setLoading(false)
     }
-  }
+  }, [user, setBookings, setLoading])
+
+  useEffect(() => {
+    if (!user) {
+      router.push('/')
+      return
+    }
+    fetchBookings()
+  }, [user, router, fetchBookings])
 
   const handleBooking = async (e: React.FormEvent) => {
     e.preventDefault()
