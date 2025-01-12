@@ -2,43 +2,137 @@
 @tailwind components;
 @tailwind utilities;
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+/* Utility classes */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.relative { position: relative; }
+.z-10 { z-index: 10; }
+.w-full { width: 100%; }
+.gap-2 { gap: 0.5rem; }
+.gap-12 { gap: 3rem; }
+.mb-4 { margin-bottom: 1rem; }
+.mb-6 { margin-bottom: 1.5rem; }
+.mb-8 { margin-bottom: 2rem; }
+.mb-12 { margin-bottom: 3rem; }
+.mb-16 { margin-bottom: 4rem; }
+.text-sm { font-size: 0.875rem; }
+.text-2xl { font-size: 1.5rem; }
+.text-white { color: white; }
+.text-center { text-align: center; }
+.text-red-400 { color: rgb(248, 113, 113); }
+.opacity-70 { opacity: 0.7; }
+.opacity-50 { opacity: 0.5; }
+
+/* Additional utilities */
+.w-16 { width: 4rem; }
+.h-16 { height: 4rem; }
+.transition-transform { transition-property: transform; }
+.duration-300 { transition-duration: 300ms; }
+.hover\:scale-110:hover { transform: scale(1.1); }
+.hover\:-translate-y-1:hover { transform: translateY(-0.25rem); }
+
+body {
+  min-height: 100vh;
+  background: linear-gradient(
+    rgba(30, 58, 138, 0.85),
+    rgba(30, 58, 138, 0.85) 40%,
+    rgba(30, 58, 138, 0.95)
+  ), url('/background.png');
+  background-size: 100% 100vh;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
-@keyframes ripple {
-  0% {
-    transform: scale(1);
-    opacity: 0.4;
-  }
-  100% {
-    transform: scale(2);
-    opacity: 0;
-  }
+/* Layout styles */
+.page-container {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  overflow: hidden;
+  position: relative;
 }
 
-@keyframes wave {
-  0% {
-    transform: translateX(0) translateZ(0) scaleY(1);
-  }
-  50% {
-    transform: translateX(-25%) translateZ(0) scaleY(0.55);
-  }
-  100% {
-    transform: translateX(-50%) translateZ(0) scaleY(1);
-  }
+.content-wrapper {
+  max-width: 56rem;
+  margin-left: auto;
+  margin-right: auto;
 }
 
+/* Form elements */
+.form-container {
+  width: 100%;
+  max-width: 24rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.space-y-4 {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.input-field {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.input-field::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.button-base {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: none;
+  transition: background-color 0.2s;
+}
+
+.button-base:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Card styles */
+.card {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+}
+
+/* Wave animation */
 .wave {
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 88.7'%3E%3Cpath d='M800 56.9c-155.5 0-204.9-50-405.5-49.9-200 0-250 49.9-394.5 49.9v31.8h800v-.2-31.6z' fill='%23ffffff11'/%3E%3C/svg%3E");
   position: absolute;
   width: 200%;
   height: 100%;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 88.7'%3E%3Cpath d='M800 56.9c-155.5 0-204.9-50-405.5-49.9-200 0-250 49.9-394.5 49.9v31.8h800v-.2-31.6z' fill='%23ffffff11'/%3E%3C/svg%3E");
   animation: wave 12s linear infinite;
   transform-origin: center bottom;
 }
 
+.wave:nth-child(2) {
+  animation: wave 12s linear infinite -2s;
+}
+
+.wave:nth-child(3) {
+  animation: wave 12s linear infinite -4s;
+}
+
+/* Icon styles */
 .icon-wrapper {
   position: relative;
 }
@@ -62,3 +156,43 @@
   animation: ripple 1s ease-out infinite;
 }
 
+/* Animation classes */
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 1s ease-in forwards;
+}
+
+.delay-1 { animation-delay: 0.5s; }
+.delay-2 { animation-delay: 1s; }
+.delay-3 { animation-delay: 1.2s; }
+.delay-4 { animation-delay: 1.4s; }
+.delay-5 { animation-delay: 1.6s; }
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes ripple {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.4;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2);
+    opacity: 0;
+  }
+}
+
+@keyframes wave {
+  0% {
+    transform: translateX(0) translateZ(0) scaleY(1);
+  }
+  50% {
+    transform: translateX(-25%) translateZ(0) scaleY(0.55);
+  }
+  100% {
+    transform: translateX(-50%) translateZ(0) scaleY(1);
+  }
+}

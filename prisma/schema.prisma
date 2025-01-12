@@ -3,19 +3,29 @@ generator client {
 }
 
 datasource db {
-  provider          = "postgresql"
-  url               = env("POSTGRES_PRISMA_URL")
-  directUrl         = env("POSTGRES_URL_NON_POOLING")
-  shadowDatabaseUrl = env("POSTGRES_URL_NON_POOLING")
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+enum UserRole {
+  USER
+  STAFF
 }
 
 model User {
-  id        String    @id @default(cuid())
-  name      String
-  email     String    @unique
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  bookings  Booking[]
+  id              String    @id @default(cuid())
+  name            String
+  email           String    @unique
+  password        String
+  role            UserRole  @default(USER)
+  emailVerified   Boolean   @default(false)
+  verifyToken     String?   @unique
+  bookingsUsed    Int       @default(0)
+  activeBookings  Int       @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  bookings        Booking[]
 }
 
 model Booking {
@@ -23,6 +33,29 @@ model Booking {
   userId    String
   user      User     @relation(fields: [userId], references: [id])
   date      DateTime
+  timeSlot  TimeSlot @relation(fields: [slotId], references: [id])
+  slotId    String
+  status    BookingStatus @default(ACTIVE)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model TimeSlot {
+  id          String    @id @default(cuid())
+  date        DateTime
+  startTime   DateTime
+  endTime     DateTime
+  capacity    Int       @default(100)
+  bookings    Booking[]
+  isWeekend   Boolean
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([date, startTime])
+}
+
+enum BookingStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
 }

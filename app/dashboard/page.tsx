@@ -17,6 +17,7 @@ export default function Dashboard() {
   const [bookings, setBookings] = useState<Booking[]>([])
   const [loading, setLoading] = useState(true)
   const [bookingDate, setBookingDate] = useState('')
+  const [bookingError, setBookingError] = useState('')
 
   useEffect(() => {
     if (!user) {
@@ -39,8 +40,6 @@ export default function Dashboard() {
     }
   }
 
-  const [bookingError, setBookingError] = useState('')
-
   const handleBooking = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!bookingDate) return
@@ -49,20 +48,16 @@ export default function Dashboard() {
     setLoading(true)
 
     try {
-      // Parse the date string from datetime-local input
-      // The input value is in format: "YYYY-MM-DDTHH:mm"
       const [datePart, timePart] = bookingDate.split('T')
       const [year, month, day] = datePart.split('-').map(Number)
       const [hours, minutes] = timePart.split(':').map(Number)
       
       const selectedDate = new Date(year, month - 1, day, hours, minutes)
       
-      // Validate date
       if (isNaN(selectedDate.getTime())) {
         throw new Error('Please select a valid date and time')
       }
 
-      // Ensure date is in the future
       const now = new Date()
       if (selectedDate < now) {
         throw new Error('Please select a future date and time')
@@ -87,7 +82,7 @@ export default function Dashboard() {
 
       setBookingDate('')
       fetchBookings()
-      setBookingError('') // Clear any previous errors
+      setBookingError('')
     } catch (error) {
       console.error('Booking error:', error)
       setBookingError(error instanceof Error ? error.message : 'Failed to create booking')
@@ -97,20 +92,12 @@ export default function Dashboard() {
   }
 
   if (!user) {
-    return null // Router will handle redirect
+    return null
   }
 
   return (
-    <div 
-      className="min-h-screen p-8"
-      style={{
-        background: `linear-gradient(rgba(30, 58, 138, 0.7), rgba(30, 58, 138, 0.7)), url('/background.png')`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed'
-      }}
-    >
-      <div className="max-w-4xl mx-auto">
+    <div className="page-container">
+      <div className="content-wrapper">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-2xl text-white">Welcome, {user.name}!</h1>
           <Button 
@@ -119,20 +106,20 @@ export default function Dashboard() {
               router.push('/')
             }}
             variant="outline"
-            className="bg-white/10 text-white hover:bg-white/20 border-0"
+            className="button-base"
           >
             Logout
           </Button>
         </div>
 
-        <div className="bg-white/10 rounded-lg p-6 mb-8">
+        <div className="card mb-8">
           <h2 className="text-xl text-white mb-4">Book a Session</h2>
           <form onSubmit={handleBooking} className="space-y-4">
             <Input
               type="datetime-local"
               value={bookingDate}
               onChange={(e) => setBookingDate(e.target.value)}
-              className="bg-white/10 text-white placeholder:text-white/50 border-white/20"
+              className="input-field"
               required
             />
             {bookingError && (
@@ -140,7 +127,7 @@ export default function Dashboard() {
             )}
             <Button 
               type="submit"
-              className="w-full bg-white/10 text-white hover:bg-white/20 border-0"
+              className="button-base w-full"
               disabled={loading}
             >
               {loading ? 'Processing...' : 'Book Now'}
@@ -148,7 +135,7 @@ export default function Dashboard() {
           </form>
         </div>
 
-        <div className="bg-white/10 rounded-lg p-6">
+        <div className="card">
           <h2 className="text-xl text-white mb-4">Your Bookings</h2>
           {loading ? (
             <p className="text-white/60">Loading...</p>
