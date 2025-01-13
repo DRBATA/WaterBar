@@ -7,7 +7,7 @@ export async function sendVerificationEmail(email: string, token: string) {
 
   try {
     await resend.emails.send({
-      from: 'The Water Bar <noreply@waterbar.com>',
+      from: 'The Water Bar <azambata.1984@gmail.com>',
       to: email,
       subject: 'Verify your email address',
       html: `
@@ -45,7 +45,7 @@ export async function sendBookingConfirmation(
 ) {
   try {
     await resend.emails.send({
-      from: 'The Water Bar <noreply@waterbar.com>',
+      from: 'The Water Bar <azambata.1984@gmail.com>',
       to: email,
       subject: 'Booking Confirmation - Morning Party',
       html: `

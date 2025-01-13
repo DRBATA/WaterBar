@@ -100,7 +100,12 @@ export default function Home() {
               loop 
               muted 
               playsInline
-              className="w-full h-full object-cover cursor-pointer transition-transform hover:scale-110 hover:-translate-y-1 duration-300 mix-blend-luminosity"
+              className="w-full h-full object-cover cursor-pointer transition-transform hover:scale-110 hover:-translate-y-1 duration-300 mix-blend-screen filter brightness-200 contrast-200"
+              style={{
+                backgroundColor: 'transparent',
+                WebkitMaskImage: 'linear-gradient(to bottom, transparent, white)',
+                maskImage: 'linear-gradient(to bottom, transparent, white)'
+              }}
             >
               <source src="/loading.mp4" type="video/mp4" />
             </video>
