@@ -88,7 +88,7 @@ export default function Home() {
 
           {/* Center Water Drop Video */}
           <div 
-            className="icon-wrapper fade-in delay-3 relative w-16 h-16 group"
+            className="icon-wrapper fade-in delay-3 relative w-24 h-24 group"
             data-tooltip="Track your daily hydration"
             onClick={() => user ? window.open('https://fpvbzfybmgofevvv.vercel.app', '_blank') : setError('Please log in to track hydration')}
             role="button"
@@ -100,7 +100,7 @@ export default function Home() {
               loop 
               muted 
               playsInline
-              className="w-full h-full object-cover cursor-pointer transition-transform hover:scale-110 hover:-translate-y-1 duration-300 mix-blend-screen"
+              className="w-full h-full object-cover cursor-pointer transition-transform hover:scale-110 hover:-translate-y-1 duration-300 mix-blend-luminosity"
             >
               <source src="/loading.mp4" type="video/mp4" />
             </video>
