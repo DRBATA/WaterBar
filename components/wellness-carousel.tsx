@@ -117,7 +117,7 @@ export function WellnessCarousel() {
                         {exp.description}
                       </p>
                       <div className="mt-4 pt-4 border-t border-white/20">
-                        <h4 className="text-lg font-medium mb-2 text-white/90">Why It's Special:</h4>
+                        <h4 className="text-lg font-medium mb-2 text-white/90">Why It&apos;s Special:</h4>
                         <p className="text-white/70">
                           {exp.special}
                         </p>
@@ -161,7 +161,7 @@ export function WellnessCarousel() {
       </div>
 
       <p className="text-center text-white/60 text-sm mt-8 max-w-2xl mx-auto">
-        These experiences are more than activities—they are journeys toward better health, deeper self-awareness, and renewed energy. Whether you're seeking physical recovery, emotional balance, or a boost in vitality, our expert practitioners are here to guide you every step of the way.
+        These experiences are more than activities—they are journeys toward better health, deeper self-awareness, and renewed energy. Whether you&apos;re seeking physical recovery, emotional balance, or a boost in vitality, our expert practitioners are here to guide you every step of the way.
       </p>
     </div>
   )

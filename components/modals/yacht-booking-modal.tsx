@@ -190,7 +190,7 @@ export function YachtBookingModal({ isOpen, onClose }: YachtBookingModalProps) {
                   </p>
                   <div className="mt-6 space-y-4">
                     <div>
-                      <h4 className="font-medium mb-2">What's Included:</h4>
+                      <h4 className="font-medium mb-2">What&apos;s Included:</h4>
                       <ul className="list-disc list-inside space-y-2 text-white/70">
                         {selectedExperience.includes.map((item, index) => (
                           <li key={index}>{item}</li>
@@ -198,7 +198,7 @@ export function YachtBookingModal({ isOpen, onClose }: YachtBookingModalProps) {
                       </ul>
                     </div>
                     <div>
-                      <h4 className="font-medium mb-2">Why It's Special:</h4>
+                      <h4 className="font-medium mb-2">Why It&apos;s Special:</h4>
                       <p className="text-white/70">{selectedExperience.special}</p>
                     </div>
                     <div className="mt-4 pt-4 border-t border-white/10 text-sm text-white/60">
