@@ -13,9 +13,15 @@ interface WellnessModalProps {
 
 export function WellnessModal({ isOpen, onClose }: WellnessModalProps) {
   const { user } = useAuth()
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    wellnessType: string;
+    drinks: string[];
+    specialRequests: string;
+    userName: string;
+    email: string;
+  }>({
     wellnessType: '',
-    drinks: '',
+    drinks: [],
     specialRequests: '',
     userName: user?.name || '',
     email: user?.email || ''
@@ -23,10 +29,65 @@ export function WellnessModal({ isOpen, onClose }: WellnessModalProps) {
   const [loading, setLoading] = useState(false)
 
   const wellnessOptions = [
-    { id: 'massage', name: 'Massage Therapy', description: 'Relaxing massage treatments' },
-    { id: 'yoga', name: 'Private Yoga', description: 'Personalized yoga sessions' },
-    { id: 'meditation', name: 'Guided Meditation', description: 'Mindfulness and relaxation' },
-    { id: 'fitness', name: 'Personal Training', description: 'Customized workout sessions' }
+    { 
+      id: 'massage', 
+      name: 'Massage Therapy', 
+      description: 'Relax and rejuvenate with targeted massage treatments designed to release tension and promote deep relaxation.' 
+    },
+    { 
+      id: 'yoga', 
+      name: 'Private Yoga', 
+      description: 'Personalized yoga practices tailored to your fitness level and goals, combining movement with mindfulness.' 
+    },
+    { 
+      id: 'meditation', 
+      name: 'Guided Meditation', 
+      description: 'Calm your mind and recharge your spirit with expert-led meditation sessions for clarity and relaxation.' 
+    },
+    { 
+      id: 'fitness', 
+      name: 'Personal Training', 
+      description: 'Customized workout sessions designed to empower your fitness journey with strength and confidence.' 
+    }
+  ]
+
+  const drinkOptions = [
+    {
+      id: 'awaken',
+      name: 'Awaken Live Water',
+      description: 'Hydration redefined: naturally structured and enriched for maximum vitality and absorption.',
+      free: true
+    },
+    {
+      id: 'chaga',
+      name: 'Chaga Mushroom Elixirs',
+      description: 'Packed with antioxidants and immune-boosting properties, chaga promotes stress relief and holistic healing.'
+    },
+    {
+      id: 'innermost',
+      name: 'Innermost Smoothies & Hydration',
+      description: 'Custom blends packed with superfoods, protein, and hydration elements to energize and nourish your body.'
+    },
+    {
+      id: 'dry',
+      name: 'Drink Dry',
+      description: 'Premium alternatives to traditional drinks, offering the complexity of cocktails without the alcohol.'
+    },
+    {
+      id: 'cacao',
+      name: 'Cacao (Life Within)',
+      description: 'Ceremonial-grade cacao that enhances mood, focus, and emotional connection.'
+    },
+    {
+      id: 'kombucha',
+      name: 'Kombucha (Booch)',
+      description: 'A gut-friendly fizzy delight, rich in probiotics to support digestion and overall well-being.'
+    },
+    {
+      id: 'ashwagandha',
+      name: 'Ashwagandha Infusions',
+      description: 'Known as an adaptogen for centuries, ashwagandha reduces stress, improves sleep, and balances energy levels.'
+    }
   ]
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -34,7 +95,6 @@ export function WellnessModal({ isOpen, onClose }: WellnessModalProps) {
     setLoading(true)
 
     try {
-      // TODO: Implement wellness request API call
       const response = await fetch('/api/requests', {
         method: 'POST',
         headers: {
@@ -55,21 +115,29 @@ export function WellnessModal({ isOpen, onClose }: WellnessModalProps) {
     }
   }
 
+  const toggleDrink = (drinkId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      drinks: prev.drinks.includes(drinkId)
+        ? prev.drinks.filter(id => id !== drinkId)
+        : [...prev.drinks, drinkId]
+    }))
+  }
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Wellness Experience & Drinks Request">
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-8">
+        {/* Wellness Experiences Section */}
         <div>
-          <label className="block text-sm font-medium mb-2">
-            Select Your Wellness Experience
-          </label>
-          <p className="text-sm text-white/60 mb-3">
-            Choose an experience to enhance your morning party
+          <h2 className="text-lg font-semibold mb-4">Blended Luxury Wellness Experiences</h2>
+          <p className="text-sm text-white/60 mb-4">
+            Transform your well-being with our thoughtfully curated wellness experiences.
           </p>
           <div className="space-y-3">
             {wellnessOptions.map(option => (
               <label
                 key={option.id}
-                className={`block p-3 rounded-lg cursor-pointer transition-colors ${
+                className={`block p-4 rounded-lg cursor-pointer transition-colors ${
                   formData.wellnessType === option.id
                     ? 'bg-white/20'
                     : 'bg-white/5 hover:bg-white/10'
@@ -88,33 +156,52 @@ export function WellnessModal({ isOpen, onClose }: WellnessModalProps) {
                   aria-label={`Select ${option.name}`}
                 />
                 <div>
-                  <h3 className="font-medium">{option.name}</h3>
-                  <p className="text-sm text-white/60">{option.description}</p>
+                  <h3 className="font-medium text-lg">{option.name}</h3>
+                  <p className="text-sm text-white/70 mt-1">{option.description}</p>
                 </div>
               </label>
             ))}
           </div>
         </div>
 
+        {/* Drinks Section */}
         <div>
-          <label htmlFor="drinks" className="block text-sm font-medium mb-2">
-            Drinks Preferences
-          </label>
-          <p className="text-sm text-white/60 mb-3">
-            Let us know your preferred drinks to keep the bar stocked
+          <h2 className="text-lg font-semibold mb-4">Adaptogenic & Mood-Enhancing Elixirs</h2>
+          <p className="text-sm text-white/60 mb-4">
+            Select from our curated selection of adaptogenic and mood-boosting drinks.
           </p>
-          <Input
-            id="drinks"
-            value={formData.drinks}
-            onChange={(e) => setFormData(prev => ({
-              ...prev,
-              drinks: e.target.value
-            }))}
-            placeholder="e.g., Specific brands, Fresh juices, Cocktail preferences"
-            className="input-field"
-          />
+          <div className="space-y-3">
+            {drinkOptions.map(drink => (
+              <label
+                key={drink.id}
+                className={`block p-4 rounded-lg cursor-pointer transition-colors ${
+                  formData.drinks.includes(drink.id)
+                    ? 'bg-white/20'
+                    : 'bg-white/5 hover:bg-white/10'
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  checked={formData.drinks.includes(drink.id)}
+                  onChange={() => toggleDrink(drink.id)}
+                  className="sr-only"
+                  aria-label={`Select ${drink.name}`}
+                />
+                <div>
+                  <div className="flex items-center">
+                    <h3 className="font-medium text-lg">{drink.name}</h3>
+                    {drink.free && (
+                      <span className="ml-2 px-2 py-1 text-xs bg-white/10 rounded">Free</span>
+                    )}
+                  </div>
+                  <p className="text-sm text-white/70 mt-1">{drink.description}</p>
+                </div>
+              </label>
+            ))}
+          </div>
         </div>
 
+        {/* Additional Notes Section */}
         <div>
           <label htmlFor="specialRequests" className="block text-sm font-medium mb-2">
             Additional Notes
@@ -137,7 +224,7 @@ export function WellnessModal({ isOpen, onClose }: WellnessModalProps) {
         <Button
           type="submit"
           className="button-base w-full"
-          disabled={loading || !formData.wellnessType}
+          disabled={loading || !formData.wellnessType || formData.drinks.length === 0}
         >
           {loading ? 'Submitting...' : 'Submit Request'}
         </Button>

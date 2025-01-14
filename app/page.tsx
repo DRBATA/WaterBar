@@ -1,6 +1,7 @@
 'use client'
 
-import { SailboatIcon as Yacht } from 'lucide-react'
+import { SailboatIcon as Yacht, Droplet } from 'lucide-react'
+import { WellnessCarousel } from '@/components/wellness-carousel'
 import { Button } from "../components/ui/button"
 import { Input } from "../components/ui/input"
 import { useState, useEffect } from 'react'
@@ -11,7 +12,7 @@ import { WellnessModal } from '@/components/modals/wellness-modal'
 
 export default function Home() {
   const router = useRouter()
-  const { user, login, register } = useAuth()
+  const { user, login, register, logout } = useAuth()
   const [isLogin, setIsLogin] = useState(true)
   const [activeModal, setActiveModal] = useState<'yacht' | 'wellness' | null>(null)
   const [formData, setFormData] = useState({
@@ -69,9 +70,23 @@ export default function Home() {
       <div className="wave opacity-70" style={{ animationDelay: '-2s' }}></div>
       <div className="wave opacity-50" style={{ animationDelay: '-4s' }}></div>
       <div className="relative z-10 flex flex-col items-center">
-        <h1 className="text-2xl text-white mb-12 fade-in delay-1">
-          The Water Bar presents The Morning Party
-        </h1>
+        <div className="w-full flex justify-between items-center mb-12 px-8">
+          <h1 className="text-2xl text-white fade-in delay-1">
+            The Water Bar presents The Morning Party
+          </h1>
+          {user && (
+            <Button 
+              onClick={() => {
+                logout()
+                router.push('/')
+              }}
+              variant="outline"
+              className="button-base bg-white/5 hover:bg-white/10"
+            >
+              Logout
+            </Button>
+          )}
+        </div>
 
         <div className="flex items-center justify-center gap-24 mb-16">
           {/* Yacht Icon */}
@@ -86,29 +101,16 @@ export default function Home() {
             <Yacht className="w-16 h-16 text-white transition-transform hover:scale-110 hover:-translate-y-1 duration-300 relative z-10 cursor-pointer" />
           </div>
 
-          {/* Center Water Drop Video */}
+          {/* Center Droplet Icon */}
           <div 
-            className="icon-wrapper fade-in delay-3 relative w-24 h-24 group"
+            className="icon-wrapper fade-in delay-3 relative w-16 h-16 group"
             data-tooltip="Track your daily hydration"
             onClick={() => user ? window.open('https://fpvbzfybmgofevvv.vercel.app', '_blank') : setError('Please log in to track hydration')}
             role="button"
             tabIndex={0}
             aria-label="Track Hydration"
           >
-            <video 
-              autoPlay 
-              loop 
-              muted 
-              playsInline
-              className="w-full h-full object-cover cursor-pointer transition-transform hover:scale-110 hover:-translate-y-1 duration-300 mix-blend-screen filter brightness-200 contrast-200"
-              style={{
-                backgroundColor: 'transparent',
-                WebkitMaskImage: 'linear-gradient(to bottom, transparent, white)',
-                maskImage: 'linear-gradient(to bottom, transparent, white)'
-              }}
-            >
-              <source src="/loading.mp4" type="video/mp4" />
-            </video>
+            <Droplet className="w-16 h-16 text-white transition-transform hover:scale-110 hover:-translate-y-1 duration-300 relative z-10 cursor-pointer" />
           </div>
 
           {/* Cup Icon */}
@@ -177,25 +179,26 @@ export default function Home() {
           }
         `}</style>
 
-        <div className={`form-container fade-in delay-5`}>
-          <div className="flex gap-2 mb-6">
-            <Button
-              type="button"
-              onClick={() => setIsLogin(true)}
-              className={`flex-1 ${isLogin ? 'bg-white/20' : 'button-base'}`}
-            >
-              Login
-            </Button>
-            <Button
-              type="button"
-              onClick={() => setIsLogin(false)}
-              className={`flex-1 ${!isLogin ? 'bg-white/20' : 'button-base'}`}
-            >
-              Register
-            </Button>
-          </div>
+        {!user && (
+          <div className={`form-container fade-in delay-5`}>
+            <div className="flex gap-2 mb-6">
+              <Button
+                type="button"
+                onClick={() => setIsLogin(true)}
+                className={`flex-1 ${isLogin ? 'bg-white/20' : 'button-base'}`}
+              >
+                Login
+              </Button>
+              <Button
+                type="button"
+                onClick={() => setIsLogin(false)}
+                className={`flex-1 ${!isLogin ? 'bg-white/20' : 'button-base'}`}
+              >
+                Register
+              </Button>
+            </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
             {!isLogin && (
               <Input
                 type="text"
@@ -235,8 +238,11 @@ export default function Home() {
             >
               {loading ? 'Processing...' : (isLogin ? 'Login' : 'Register')}
             </Button>
-          </form>
-        </div>
+            </form>
+          </div>
+        )}
+
+        {user && <WellnessCarousel />}
       </div>
     </div>
   )

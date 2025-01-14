@@ -2,6 +2,51 @@
 @tailwind components;
 @tailwind utilities;
 
+@import 'react-day-picker/dist/style.css';
+
+/* Calendar overrides */
+.rdp {
+  --rdp-cell-size: 40px;
+  --rdp-accent-color: rgba(255, 255, 255, 0.1);
+  --rdp-background-color: transparent;
+  --rdp-accent-color-dark: rgba(255, 255, 255, 0.2);
+  --rdp-background-color-dark: transparent;
+  --rdp-outline: 2px solid var(--rdp-accent-color);
+  --rdp-outline-selected: 2px solid rgba(255, 255, 255, 0.5);
+  margin: 0;
+}
+
+.rdp-day_selected:not([disabled]),
+.rdp-day_selected:focus:not([disabled]),
+.rdp-day_selected:active:not([disabled]),
+.rdp-day_selected:hover:not([disabled]) {
+  background-color: var(--rdp-accent-color);
+  color: white;
+}
+
+.rdp-button:hover:not([disabled]):not(.rdp-day_selected) {
+  background-color: var(--rdp-accent-color);
+  color: white;
+}
+
+@layer utilities {
+  .perspective {
+    perspective: 1000px;
+  }
+
+  .transform-style-3d {
+    transform-style: preserve-3d;
+  }
+
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+
+  .rotate-y-180 {
+    transform: rotateY(180deg);
+  }
+}
+
 :root {
   --background: 222.2 84% 4.9%;
   --foreground: 210 40% 98%;
