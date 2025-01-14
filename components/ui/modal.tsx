@@ -22,7 +22,7 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
       />
       
       {/* Modal */}
-      <div className="relative z-50 w-full max-w-lg bg-white/10 backdrop-blur-md rounded-lg shadow-lg p-6 text-white">
+      <div className="relative z-50 w-full max-w-lg bg-white/10 backdrop-blur-md rounded-lg shadow-lg p-6 text-white max-h-[90vh] flex flex-col">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">{title}</h2>
           <button
@@ -36,7 +36,7 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
           </button>
         </div>
         
-        <div className="space-y-4">
+        <div className="space-y-4 overflow-y-auto">
           {children}
         </div>
       </div>
