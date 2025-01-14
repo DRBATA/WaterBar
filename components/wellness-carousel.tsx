@@ -26,13 +26,13 @@ const experiences = [
   {
     title: 'Personal Training',
     description: 'Work with a functional fitness specialist to improve strength, flexibility, and overall movement quality.',
-    special: 'Tailored for your unique needs, whether you\'re recovering from injury, addressing joint necrosis or scoliosis, or working on post-pregnancy fitness. Sessions blend functional training with somatic practices to build resilience and mobility.',
+    special: 'Tailored for your unique needs, whether you&apos;re recovering from injury, addressing joint necrosis or scoliosis, or working on post-pregnancy fitness. Sessions blend functional training with somatic practices to build resilience and mobility.',
     image: '/wellness/dance.jpg'
   },
   {
     title: 'Ice Bath & Meditation',
     description: 'Immerse yourself in a guided ice bath experience paired with mindfulness meditation. Perfect for physical recovery and mental clarity.',
-    special: 'Facilitated by experts in somatic resilience, this practice is designed to activate your body\'s natural healing responses while calming the nervous system.',
+    special: 'Facilitated by experts in somatic resilience, this practice is designed to activate your body&apos;s natural healing responses while calming the nervous system.',
     image: '/wellness/ice-bath.jpg'
   },
   {

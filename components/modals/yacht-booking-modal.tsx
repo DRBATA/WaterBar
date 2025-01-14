@@ -217,9 +217,9 @@ export function YachtBookingModal({ isOpen, onClose }: YachtBookingModalProps) {
                 </Button>
               </div>
             ) : (
-              <div className="flex items-center justify-center h-full text-white/60">
-                Select a date to view available experiences
-              </div>
+          <div className="flex items-center justify-center h-full text-white/60">
+            Select a date to view available experiences
+          </div>
             )}
           </div>
         </div>
