@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Button } from "@/components/ui/button"
 import { ChevronUp, ChevronDown } from 'lucide-react'
+import Image from 'next/image'
 
 interface QRBooking {
   code: string
@@ -68,11 +68,15 @@ export function QRDrawer({ qrCodes }: QRDrawerProps) {
               key={index}
               className="bg-white/5 rounded-lg p-4 space-y-3"
             >
-              <img 
-                src={booking.code} 
-                alt="Booking QR Code"
-                className="w-full aspect-square bg-white rounded-lg p-2"
-              />
+              <div className="relative w-full aspect-square bg-white rounded-lg p-2">
+                <Image 
+                  src={booking.code}
+                  alt="Booking QR Code"
+                  fill
+                  className="object-contain"
+                  priority
+                />
+              </div>
               <div className="text-white space-y-1">
                 <h3 className="font-medium">{booking.experience}</h3>
                 <p className="text-sm text-white/60">{booking.date}</p>

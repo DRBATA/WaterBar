@@ -1,7 +1,8 @@
 'use client'
 
 import { useAuth } from '@/lib/auth-context'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { YachtBookingModal } from '@/components/modals/yacht-booking-modal'
 import { QRDrawer } from '@/components/qr-drawer'
@@ -14,7 +15,16 @@ interface QRBooking {
 }
 
 export default function Dashboard() {
+  const router = useRouter()
   const { user } = useAuth()
+  
+  // Redirect if not logged in
+  useEffect(() => {
+    if (!user) {
+      router.push('/')
+    }
+  }, [user, router])
+
   const [showYachtModal, setShowYachtModal] = useState(false)
   const [qrCodes, setQRCodes] = useState<QRBooking[]>([])
 

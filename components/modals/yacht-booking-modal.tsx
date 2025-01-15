@@ -10,95 +10,65 @@ import QRCode from 'qrcode'
 interface YachtBookingModalProps {
   isOpen: boolean
   onClose: () => void
-  onBookingComplete?: (
-    qrCode: string,
-    experience: string,
-    date: string,
-    time: string
-  ) => void
+  onBookingComplete: (qrCode: string, experience: string, date: string, time: string) => void
 }
 
 // Define the yacht experiences
 const experiences = [
   {
-    id: 'sunrise',
-    name: 'Sunrise Serenity Sail',
-    description: 'Start your day in harmony with the rising sun as you explore mindful movement and somatic wellness. Perfect for early risers who value connection and calm.',
+    id: 'sunwarrior',
+    name: 'Sun Warrior Yoga',
+    description: 'Start your day with an energizing yoga flow as the sun rises over the horizon. Led by our expert yoga instructors, this session combines traditional asanas with breathwork and meditation.',
     color: 'bg-amber-500',
     textColor: 'text-amber-500',
     time: '6:00 AM - 9:00 AM',
+    days: [1, 2], // Monday, Tuesday
     includes: [
-      'Guided meditation and bodyweight yoga for amplitude, quality, and control of movement',
-      'Expert recovery tips from a trainer specializing in joint health, rehabilitation, and pre/post-pregnancy fitness',
-      'Herbal teas, adaptogenic elixirs, and nutrient-rich smoothies'
-    ],
-    special: 'Led by certified practitioners, this experience fuses functional training with somatic resilience techniques for a rejuvenating start.'
+      'Sunrise meditation and pranayama',
+      'Dynamic vinyasa flow',
+      'Post-practice adaptogenic elixirs',
+      'Light breakfast with superfoods'
+    ]
   },
   {
-    id: 'sunset',
-    name: 'Sunset Sober Soirée',
-    description: 'Dive into a high-energy, alcohol-free party that combines dynamic movement with community vibes. Golden hour has never looked so good.',
-    color: 'bg-purple-500',
-    textColor: 'text-purple-500',
-    time: '4:00 PM - 7:00 PM',
-    includes: [
-      'Ecstatic dance sessions inspired by somatic practices for deep healing and joyful release',
-      'Beats by live DJs paired with signature mood-boosting drinks like cacao, kombucha, and ashwagandha cocktails',
-      'Interactive connection games designed for authentic engagement'
-    ],
-    special: 'Incorporating somatic regulation techniques, this soirée uplifts your spirit while grounding your energy.'
-  },
-  {
-    id: 'highenergy',
-    name: 'High-Energy Wellness Cruise',
-    description: 'A fitness-inspired celebration on deck that turns wellness into a dynamic, unforgettable experience. Perfect for active souls who love to push boundaries.',
+    id: 'functional',
+    name: 'Functional Wellness',
+    description: 'High-intensity functional training combined with recovery techniques. Perfect for those seeking both challenge and restoration.',
     color: 'bg-blue-500',
     textColor: 'text-blue-500',
     time: '10:00 AM - 1:00 PM',
+    days: [3, 4], // Wednesday, Thursday
     includes: [
-      'Hip-hop yoga and cardio sessions infused with functional training principles',
-      'Recovery zones with ice baths and post-workout adaptogenic smoothies',
-      'Insights from a trainer who works with professional athletes and specializes in post-injury rehabilitation'
-    ],
-    special: 'With somatic approaches to enhance recovery and movement quality, this cruise is the ultimate wellness-meets-party adventure.'
+      'HIIT and strength circuits',
+      'Mobility work and stretching',
+      'Ice bath and heat therapy',
+      'Recovery smoothies and supplements'
+    ]
   },
   {
-    id: 'midnight',
-    name: 'Midnight Moonlight Lounge',
-    description: 'Unwind and restore in a tranquil nighttime setting. Perfect for deep conversations, introspection, or simply stargazing in serenity.',
-    color: 'bg-indigo-500',
-    textColor: 'text-indigo-500',
-    time: '8:00 PM - 11:00 PM',
+    id: 'somatic',
+    name: 'Somatic Mindfulness',
+    description: 'A gentle evening practice focusing on somatic experiencing, embodied meditation, and deep relaxation techniques.',
+    color: 'bg-purple-500',
+    textColor: 'text-purple-500',
+    time: '4:00 PM - 7:00 PM',
+    days: [5, 6], // Friday, Saturday
     includes: [
-      'Guided tea ceremonies and sound baths led by certified somatic wellness practitioners',
-      'Cozy spaces for lounging, supported by calming cacao and herbal nightcaps',
-      'Soft somatic touch practices to release tension and enhance relaxation'
-    ],
-    special: 'Blending somatic resilience techniques with the soothing rhythm of the waves, this lounge is the epitome of nighttime bliss.'
-  },
-  {
-    id: 'celebration',
-    name: 'Celebration, Reinvented',
-    description: 'From birthdays to engagements, bring your vision to life with our signature yacht celebrations.',
-    color: 'bg-rose-500',
-    textColor: 'text-rose-500',
-    time: 'Custom',
-    includes: [
-      'Pre-designed celebration themes with wellness twists',
-      'Ecstatic dance, sound healing, and adaptogenic elixirs to elevate the party',
-      'Led by a team of experts in somatic experiencing and emotional regulation for unique, transformative moments'
-    ],
-    special: 'Celebrate with purpose, guided by wellness practices that make every moment unforgettable.'
+      'Guided somatic meditation',
+      'Gentle movement therapy',
+      'Sound healing session',
+      'Calming herbal tea ceremony'
+    ]
   }
 ]
 
 // Function to determine which experience is available on a given date
 const getExperienceForDate = (date: Date | undefined): typeof experiences[0] | null => {
   if (!date) return null
-  const dayOfWeek = date.getDay()
-  const weekInMonth = Math.floor((date.getDate() - 1) / 7)
-  const experienceIndex = (weekInMonth + dayOfWeek) % experiences.length
-  return experiences[experienceIndex]
+  const dayOfWeek = date.getDay() // 0 = Sunday, 1 = Monday, etc.
+  
+  // Find experience that runs on this day
+  return experiences.find(exp => exp.days.includes(dayOfWeek)) || null
 }
 
 export function YachtBookingModal({ isOpen, onClose, onBookingComplete }: YachtBookingModalProps) {
@@ -111,8 +81,13 @@ export function YachtBookingModal({ isOpen, onClose, onBookingComplete }: YachtB
       return
     }
     if (date) {
+      const experience = getExperienceForDate(date)
       setSelectedDate(date)
-      setSelectedExperience(getExperienceForDate(date))
+      setSelectedExperience(experience)
+      
+      if (!experience) {
+        alert('No experience available on this day. Please select another date.')
+      }
     } else {
       setSelectedDate(undefined)
       setSelectedExperience(null)
@@ -124,7 +99,6 @@ export function YachtBookingModal({ isOpen, onClose, onBookingComplete }: YachtB
 
     setLoading(true)
     try {
-
       // Generate QR code with booking details
       const qrData = JSON.stringify({
         experience: selectedExperience.name,
@@ -134,8 +108,8 @@ export function YachtBookingModal({ isOpen, onClose, onBookingComplete }: YachtB
 
       const qrCode = await QRCode.toDataURL(qrData)
       
-      // Notify parent component with full details
-      onBookingComplete?.(
+      // Pass booking details back
+      onBookingComplete(
         qrCode,
         selectedExperience.name,
         format(selectedDate, 'MMMM do, yyyy'),
@@ -145,28 +119,34 @@ export function YachtBookingModal({ isOpen, onClose, onBookingComplete }: YachtB
       // Close modal
       onClose()
     } catch (error) {
-      console.error('Booking error:', error)
+      console.error('Failed to generate QR:', error)
+      alert('Failed to create booking. Please try again.')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="The Water Bar Yacht Party Series">
+    <Modal isOpen={isOpen} onClose={onClose} title="Book Your Yacht Experience">
       <div className="space-y-8">
         <div>
           <h2 className="text-xl font-semibold mb-2">
-            Sail into Wellness, Connection, and Celebration
+            Select Your Experience
           </h2>
           <p className="text-white/60">
-            Experience the perfect blend of luxury, wellness, and transformative practices aboard The Water Bar yachts.
+            Each experience runs on specific days:
           </p>
+          <ul className="mt-2 space-y-1 text-sm text-white/60">
+            <li>Sun Warrior Yoga: Monday & Tuesday</li>
+            <li>Functional Wellness: Wednesday & Thursday</li>
+            <li>Somatic Mindfulness: Friday & Saturday</li>
+          </ul>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
           {/* Calendar Section */}
           <div>
-            <h3 className="text-lg font-medium mb-4">Select Your Date</h3>
+            <h3 className="text-lg font-medium mb-4">Select Date</h3>
             <Calendar
               mode="single"
               selected={selectedDate}
@@ -195,26 +175,20 @@ export function YachtBookingModal({ isOpen, onClose, onBookingComplete }: YachtB
                   <h3 className={`text-xl font-semibold ${selectedExperience.textColor}`}>
                     {selectedExperience.name}
                   </h3>
-                  <p className="text-white/80 mt-3 text-lg">
+                  <p className="text-white/80 mt-3">
                     {selectedExperience.description}
                   </p>
-                  <div className="mt-6 space-y-4">
-                    <div>
-                      <h4 className="font-medium mb-2">What&apos;s Included:</h4>
-                      <ul className="list-disc list-inside space-y-2 text-white/70">
-                        {selectedExperience.includes.map((item, index) => (
-                          <li key={index}>{item}</li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div>
-                      <h4 className="font-medium mb-2">Why It&apos;s Special:</h4>
-                      <p className="text-white/70">{selectedExperience.special}</p>
-                    </div>
-                    <div className="mt-4 pt-4 border-t border-white/10 text-sm text-white/60">
-                      <p>Time: {selectedExperience.time}</p>
-                      <p>Date: {selectedDate ? format(selectedDate, 'MMMM do, yyyy') : ''}</p>
-                    </div>
+                  <div className="mt-4 space-y-3">
+                    <h4 className="font-medium">What's Included:</h4>
+                    <ul className="list-disc list-inside space-y-1 text-white/70 text-sm">
+                      {selectedExperience.includes.map((item, i) => (
+                        <li key={i}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="mt-4 pt-4 border-t border-white/10 text-sm text-white/60">
+                    <p>Time: {selectedExperience.time}</p>
+                    <p>Date: {selectedDate ? format(selectedDate, 'MMMM do, yyyy') : ''}</p>
                   </div>
                 </div>
 
@@ -223,30 +197,14 @@ export function YachtBookingModal({ isOpen, onClose, onBookingComplete }: YachtB
                   className={`w-full ${selectedExperience.color} hover:opacity-90`}
                   disabled={loading}
                 >
-                  {loading ? 'Booking...' : 'Book Experience'}
+                  {loading ? 'Creating Booking...' : 'Book Experience'}
                 </Button>
               </div>
             ) : (
               <div className="flex items-center justify-center h-full text-white/60">
-                Select a date to view available experiences
+                Select a date to view available experience
               </div>
             )}
-          </div>
-        </div>
-
-        {/* Experience List */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-medium">Available Experiences</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {experiences.map((exp) => (
-              <div
-                key={exp.id}
-                className={`p-3 rounded-lg ${exp.color}/5 border border-${exp.color}/10`}
-              >
-                <h4 className={`font-medium ${exp.textColor}`}>{exp.name}</h4>
-                <p className="text-sm text-white/60 mt-1">{exp.description}</p>
-              </div>
-            ))}
           </div>
         </div>
       </div>
