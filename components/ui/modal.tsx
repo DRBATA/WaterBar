@@ -14,15 +14,15 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center">
       {/* Backdrop */}
       <div 
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
       />
       
       {/* Modal */}
-      <div className="relative z-50 w-full max-w-lg bg-white/10 backdrop-blur-md rounded-lg shadow-lg p-6 text-white max-h-[90vh] flex flex-col">
+      <div className="relative z-[101] w-full max-w-lg mx-4 bg-black/90 backdrop-blur-md rounded-lg shadow-lg p-6 text-white max-h-[90vh] flex flex-col">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">{title}</h2>
           <button

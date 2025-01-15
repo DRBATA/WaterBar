@@ -13,6 +13,7 @@ interface UserJwtPayload extends JwtPayload {
 const protectedRoutes = ['/dashboard']
 const adminRoutes = ['/admin']
 const authRoutes = ['/login', '/register']
+const publicRoutes = ['/']
 
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get('token')?.value
@@ -30,9 +31,11 @@ export async function middleware(request: NextRequest) {
   // Get user from token
   const user = verifyToken()
 
-  // Redirect authenticated users away from auth pages
-  if (user && authRoutes.some(route => pathname.startsWith(route))) {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
+  // Redirect authenticated users from public/auth pages to their dashboard
+  if (user && (authRoutes.some(route => pathname.startsWith(route)) || pathname === '/')) {
+    return NextResponse.redirect(
+      new URL(user.role === 'STAFF' ? '/admin' : '/dashboard', request.url)
+    )
   }
 
   // Check protected routes
@@ -65,6 +68,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
+    '/',
     '/dashboard/:path*',
     '/admin/:path*',
     '/login',

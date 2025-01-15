@@ -6,40 +6,39 @@ import Image from 'next/image'
 
 const experiences = [
   {
-    title: 'Massage Therapy',
-    description: 'Experience deeply therapeutic massage sessions designed to release tension, improve mobility, and restore emotional balance.',
-    special: 'Incorporates somatic resilience techniques to support stress release and regulate the nervous system, led by practitioners trained in neuro-affective touch and trauma recovery.',
+    title: 'The Connection Experience',
+    description: 'Join a vibrant community of conscious individuals seeking deeper connections. Our signature social gatherings create space for authentic interactions, meaningful dialogue, and personal growth.',
+    special: 'Each gathering features thoughtfully curated activities and conversation catalysts, fostering an environment where diverse perspectives flourish and genuine connections naturally emerge.',
+    highlight: 'Part of The Water Bar community experience',
     image: '/wellness/connection.jpg'
   },
   {
-    title: 'Private Yoga Sessions',
-    description: 'Personalized yoga sessions tailored to your unique body and movement goals. Perfect for improving flexibility, posture, and inner balance.',
-    special: 'Grounded in functional training principles to enhance everyday movement, with modifications for post-pregnancy fitness and joint health. Sessions may include somatic movement therapy to deepen mind-body connection.',
+    title: 'Movement & Functional Fitness',
+    description: 'Transform your body and mind through our premium movement sessions. Combining yoga, stretching, and functional fitness, these expert-led classes are designed to enhance your physical capabilities while fostering mind-body connection.',
+    special: 'Led by certified instructors specializing in functional movement, injury prevention, and rehabilitation. Sessions are tailored to your unique needs, whether you are a beginner or advanced practitioner.',
+    highlight: 'Premium experience - Additional booking required',
     image: '/wellness/yoga.jpg'
   },
   {
-    title: 'Guided Meditation',
-    description: 'Let go of stress and cultivate clarity with mindfulness practices led by somatic wellness experts.',
-    special: 'Integrates techniques from psychosomatic therapy, including trauma-sensitive mindfulness and somatic experiencing, to help process stress, regulate emotions, and improve mental well-being.',
+    title: 'Ice Bath Journey',
+    description: 'Challenge your limits and discover inner strength through our guided ice bath experiences. This powerful practice combines breath work, cold exposure, and meditation for a transformative journey of physical and mental resilience.',
+    special: 'Each session is carefully monitored by our trained facilitators who guide you through proper breathing techniques and mental preparation. Experience the scientifically-proven benefits of cold therapy in a safe, controlled environment.',
+    highlight: 'Reservation required - Limited availability',
     image: '/wellness/ice-bath.jpg'
   },
   {
-    title: 'Personal Training',
-    description: 'Work with a functional fitness specialist to improve strength, flexibility, and overall movement quality.',
-    special: 'Tailored for your unique needs, whether you&apos;re recovering from injury, addressing joint necrosis or scoliosis, or working on post-pregnancy fitness. Sessions blend functional training with somatic practices to build resilience and mobility.',
+    title: 'Sober Rave Experience',
+    description: 'Rediscover the pure joy of dance and movement in our signature alcohol-free party environment. Experience the natural high of rhythmic movement, community connection, and conscious celebration.',
+    special: 'Our sober raves feature world-class DJs, immersive lighting, and a vibrant community of conscious party-goers. Feel the freedom to express yourself fully while staying clear-headed and present.',
+    highlight: 'Included with your subscription',
     image: '/wellness/dance.jpg'
   },
   {
-    title: 'Ice Bath & Meditation',
-    description: 'Immerse yourself in a guided ice bath experience paired with mindfulness meditation. Perfect for physical recovery and mental clarity.',
-    special: 'Facilitated by experts in somatic resilience, this practice is designed to activate your body&apos;s natural healing responses while calming the nervous system.',
-    image: '/wellness/ice-bath.jpg'
-  },
-  {
-    title: 'Ecstatic Dance & Somatic Healing',
-    description: 'Move freely in a guided dance experience rooted in somatic healing practices. Feel the joy of uninhibited movement while releasing stored tension and emotions.',
-    special: 'Led by a certified somatic practitioner, this session blends movement therapy with techniques for processing trauma and fostering emotional resilience.',
-    image: '/wellness/dance.jpg'
+    title: 'The Water Bar Experience',
+    description: 'Discover our innovative beverage program featuring craft non-alcoholic cocktails and functional wellness drinks. Each creation combines premium adaptogens, nootropics, and botanical extracts to enhance your vitality.',
+    special: 'Our menu showcases unique blends of ashwagandha, rhodiola, lion\'s mane, and other powerful adaptogens. Experience the future of conscious drinking, crafted to elevate both body and mind.',
+    highlight: 'Coming soon to locations across UAE',
+    image: '/wellness/elixir-bar.jpg'
   }
 ]
 
@@ -74,16 +73,16 @@ export function WellnessCarousel() {
   }
 
   return (
-    <div className="mt-16 mb-8">
-      <div className="text-center mb-8">
+    <div className="mt-8 mb-8">
+      <div className="text-center mb-6">
         <h2 className="text-2xl font-semibold mb-2">
           Blended Wellness Experiences
         </h2>
         <p className="text-white/60">
-          Book Your Transformative Wellness Journey
+          Explore Transformative Journeys
         </p>
         <p className="text-white/60 mt-2 max-w-2xl mx-auto">
-          Choose from a range of expertly guided wellness experiences designed to help you thrive. Each session integrates advanced psychosomatic techniques and functional physical training, creating a powerful blend of movement, healing, and self-discovery.
+          Discover experiences designed to help you thrive. Each offering integrates advanced techniques and mindful practices, creating a powerful blend of movement, healing, and self-discovery.
         </p>
       </div>
 
@@ -116,11 +115,16 @@ export function WellnessCarousel() {
                       <p className="text-white/80 text-lg leading-relaxed mb-4">
                         {exp.description}
                       </p>
-                      <div className="mt-4 pt-4 border-t border-white/20">
-                        <h4 className="text-lg font-medium mb-2 text-white/90">Why It&apos;s Special:</h4>
-                        <p className="text-white/70">
-                          {exp.special}
-                        </p>
+                      <div className="mt-4 pt-4 border-t border-white/20 space-y-4">
+                        <div>
+                          <h4 className="text-lg font-medium mb-2 text-white/90">Why It&apos;s Special:</h4>
+                          <p className="text-white/70">
+                            {exp.special}
+                          </p>
+                        </div>
+                        <div className="inline-block px-3 py-1 rounded-full bg-white/10 text-sm text-white/90">
+                          {exp.highlight}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -132,18 +136,18 @@ export function WellnessCarousel() {
 
         <button
           onClick={handlePrev}
-          className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+          className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-8 p-3 rounded-full bg-black/50 hover:bg-black/70 transition-colors backdrop-blur-sm"
           aria-label="Previous slide"
         >
-          <ChevronLeft className="w-6 h-6" />
+          <ChevronLeft className="w-8 h-8" />
         </button>
 
         <button
           onClick={handleNext}
-          className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+          className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-8 p-3 rounded-full bg-black/50 hover:bg-black/70 transition-colors backdrop-blur-sm"
           aria-label="Next slide"
         >
-          <ChevronRight className="w-6 h-6" />
+          <ChevronRight className="w-8 h-8" />
         </button>
 
         <div className="flex justify-center mt-4 space-x-2">
