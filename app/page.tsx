@@ -1,123 +1,192 @@
 'use client'
 
-import { WellnessCarousel } from '@/components/wellness-carousel'
-import { Button } from "@/components/ui/button"
 import { useState } from 'react'
-import { YachtBookingModal } from '@/components/modals/yacht-booking-modal'
-import { QRDrawer } from '@/components/qr-drawer'
+import { Button } from "@/components/ui/button"
+import { WellnessCarousel } from '@/components/wellness-carousel'
+import { CartDrawer } from '@/components/cart-drawer'
+import { SubscribeModal } from '@/components/modals/subscribe-modal'
+import { LoginModal } from '@/components/modals/login-modal'
+import { Calendar } from '@/components/ui/calendar'
+import { format } from 'date-fns'
+import { ExperienceSelector } from '@/components/experience-selector'
+import { DrinksSelector } from '@/components/drinks-selector'
 
-interface QRBooking {
-  code: string
-  experience: string
-  date: string
-  time: string
+interface CartItem {
+  type: 'booking' | 'experience' | 'drink'
+  name: string
+  price: number
+  date?: string
+  time?: string
+  duration?: number // for experiences
 }
 
 export default function Home() {
-  const [showYachtModal, setShowYachtModal] = useState(false)
-  const [qrCodes, setQRCodes] = useState<QRBooking[]>([])
+  // Auth States
+  const [showSubscribeModal, setShowSubscribeModal] = useState(false)
+  const [showLoginModal, setShowLoginModal] = useState(false)
+  const [isSubscribed, setIsSubscribed] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
 
-  const handleBookingComplete = (qrCode: string, experience: string, date: string, time: string) => {
-    // Check booking limit
-    if (qrCodes.length >= 3) {
-      alert('Maximum 3 bookings allowed at a time')
+  // Booking States
+  const [selectedDate, setSelectedDate] = useState<Date>()
+  const [showExperiences, setShowExperiences] = useState(false)
+  const [showDrinks, setShowDrinks] = useState(false)
+  const [cartItems, setCartItems] = useState<CartItem[]>([])
+
+  const handleDateSelect = (date: Date | undefined) => {
+    if (!isSubscribed || !isLoggedIn) {
+      alert('Please subscribe and login first')
       return
     }
 
-    setQRCodes(prev => [...prev, { 
-      code: qrCode, 
-      experience, 
-      date, 
-      time
-    }])
+    setSelectedDate(date)
+    if (date) {
+      // Add booking to cart
+      setCartItems(prev => [...prev, {
+        type: 'booking',
+        name: 'Morning Party',
+        price: 0, // Free with subscription
+        date: format(date, 'MMMM do, yyyy'),
+        time: '8:00 AM - 12:00 PM'
+      }])
+      setShowExperiences(true)
+    }
+  }
+
+  const addToCart = (item: CartItem) => {
+    setCartItems(prev => [...prev, item])
+  }
+
+  const handleCheckout = () => {
+    // Demo confirmation
+    alert(`
+      🎉 Booking Confirmed!
+      
+      An email has been sent with your:
+      - Yacht Entry Pass
+      - Experience Time Slots
+      - Water Bar Purchases
+      
+      Please bring your email confirmation for:
+      • Entry to yacht
+      • Access to booked experiences
+      • Water Bar libations
+      
+      See you at The Water Bar! 🛥️✨
+    `)
+    setCartItems([])
   }
 
   return (
     <main className="min-h-screen bg-black">
-      {/* Background Waves */}
-      <div className="fixed inset-0 z-0">
-        <div className="wave"></div>
-        <div className="wave opacity-70" style={{ animationDelay: '-2s' }}></div>
-        <div className="wave opacity-50" style={{ animationDelay: '-4s' }}></div>
+      {/* Top Bar */}
+      <div className="fixed top-0 left-0 right-0 p-4 z-50 bg-black/50 backdrop-blur-lg">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <Button
+            onClick={() => setShowSubscribeModal(true)}
+            className="bg-amber-500 hover:bg-amber-600 text-black"
+          >
+            Subscribe Now
+          </Button>
+
+          <Button
+            onClick={() => setShowLoginModal(true)}
+            variant="outline"
+          >
+            {isLoggedIn ? 'Subscribed Member' : 'Login'}
+          </Button>
+        </div>
       </div>
-      
-      {/* Content */}
-      <div className="relative z-10">
-        {/* Three Icons */}
-        <div className="max-w-7xl mx-auto p-6 mb-12">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Yacht Booking */}
-            <div className="card hover:bg-white/5 transition-colors cursor-pointer group" 
-                onClick={() => setShowYachtModal(true)}>
-              <div className="p-6 text-center">
-                <div className="text-6xl mb-4">⛵</div>
-                <h3 className="text-xl font-medium text-white mb-2">Yacht Experiences</h3>
-                <p className="text-white/60 text-sm">
-                  Sun Warrior Yoga • Functional Wellness • Somatic Mindfulness
-                </p>
-                <Button 
-                  variant="outline" 
-                  className="mt-4 w-full button-base opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  View Schedule
-                </Button>
-              </div>
+
+      {/* Main Content */}
+      <div className="pt-20 px-4">
+        <div className="max-w-7xl mx-auto">
+          {/* Welcome Text */}
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-white mb-2">
+              Begin Your Wellness Journey
+            </h1>
+            <p className="text-white/60">
+              Select a date to start your morning party experience
+            </p>
+          </div>
+
+          {/* Booking Flow */}
+          <div className="space-y-8">
+            {/* Calendar */}
+            <div>
+              <h2 className="text-2xl font-bold text-white mb-4">Select Date</h2>
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={handleDateSelect}
+                className="rounded-md border border-white/10 p-4 mx-auto"
+              />
             </div>
 
-            {/* Water App */}
-            <div className="card hover:bg-white/5 transition-colors cursor-pointer group"
-                onClick={() => window.open('https://water-tracking-app.com', '_blank')}>
-              <div className="p-6 text-center">
-                <div className="text-6xl mb-4">💧</div>
-                <h3 className="text-xl font-medium text-white mb-2">Water App</h3>
-                <p className="text-white/60 text-sm">
-                  Track Hydration • Set Goals • Get Reminders
-                </p>
-                <Button 
-                  variant="outline" 
-                  className="mt-4 w-full button-base opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  Open App
-                </Button>
-              </div>
-            </div>
+            {/* Experiences Section */}
+            {showExperiences && selectedDate && (
+              <ExperienceSelector
+                selectedDate={selectedDate}
+                onAddToCart={(experience, price, time) => {
+                  addToCart({
+                    type: 'experience',
+                    name: experience,
+                    price,
+                    time,
+                    date: format(selectedDate, 'MMMM do, yyyy')
+                  })
+                  // Show drinks after adding an experience
+                  setShowDrinks(true)
+                }}
+              />
+            )}
 
-            {/* The Water Bar */}
-            <div className="card hover:bg-white/5 transition-colors cursor-pointer group">
-              <div className="p-6 text-center">
-                <div className="text-6xl mb-4">🧋</div>
-                <h3 className="text-xl font-medium text-white mb-2">The Water Bar</h3>
-                <p className="text-white/60 text-sm">
-                  Air-Generated Water • Adaptogens • Custom Electrolytes
-                </p>
-                <Button 
-                  variant="outline" 
-                  className="mt-4 w-full button-base opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  View Menu
-                </Button>
-              </div>
+            {/* Drinks Section */}
+            {showDrinks && (
+              <DrinksSelector
+                onAddToCart={(drink, price) => {
+                  addToCart({
+                    type: 'drink',
+                    name: drink,
+                    price
+                  })
+                }}
+              />
+            )}
+
+            {/* Experience Carousel */}
+            <div className="mt-8">
+              <WellnessCarousel />
             </div>
           </div>
         </div>
-
-        {/* Carousel */}
-        <div className="relative z-0 flex flex-col items-center">
-          <div className="mt-4">
-            <WellnessCarousel />
-          </div>
-        </div>
-
-        {/* Modals */}
-        <YachtBookingModal 
-          isOpen={showYachtModal}
-          onClose={() => setShowYachtModal(false)}
-          onBookingComplete={handleBookingComplete}
-        />
-
-        {/* QR Code Drawer */}
-        <QRDrawer qrCodes={qrCodes} />
       </div>
+
+      {/* Modals */}
+      <SubscribeModal 
+        isOpen={showSubscribeModal}
+        onClose={() => setShowSubscribeModal(false)}
+        onSubscribe={() => {
+          setIsSubscribed(true)
+          setShowSubscribeModal(false)
+        }}
+      />
+
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onLogin={() => {
+          setIsLoggedIn(true)
+          setShowLoginModal(false)
+        }}
+      />
+
+      {/* Cart Drawer */}
+      <CartDrawer
+        items={cartItems}
+        onCheckout={handleCheckout}
+      />
     </main>
   )
 }
