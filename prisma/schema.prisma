@@ -13,16 +13,29 @@ enum UserRole {
   STAFF
 }
 
+enum MembershipType {
+  NONE      // Just registered
+  DAY_PASS  // Single day access
+  WEEK_1    // 1 week membership
+  WEEK_2    // 2 weeks membership
+  WEEK_4    // 4 weeks membership
+  WEEK_12   // Full season
+}
+
 model User {
-  id              String    @id @default(cuid())
+  id              String         @id @default(cuid())
   name            String
-  email           String    @unique
+  email           String         @unique
   password        String
-  role            UserRole  @default(USER)
-  emailVerified   Boolean   @default(false)
-  verifyToken     String?   @unique
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  role            UserRole       @default(USER)
+  emailVerified   Boolean        @default(false)  // Keep but don't require
+  verifyToken     String?        @unique          // Keep but don't require
+  membershipType  MembershipType @default(NONE)
+  membershipStart DateTime?
+  membershipEnd   DateTime?
+  bookingsRemaining Int          @default(0)      // Number of advance bookings allowed
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
   bookings        Booking[]
 }
 
@@ -33,7 +46,9 @@ model Booking {
   date      DateTime
   timeSlot  TimeSlot @relation(fields: [slotId], references: [id])
   slotId    String
-  status    BookingStatus @default(ACTIVE)
+  status    BookingStatus @default(PENDING_PAYMENT)
+  checkedIn Boolean  @default(false)    // For QR code validation
+  qrCode    String?  @unique           // Generated QR code for check-in
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -53,7 +68,8 @@ model TimeSlot {
 }
 
 enum BookingStatus {
-  ACTIVE
-  COMPLETED
-  CANCELLED
+  PENDING_PAYMENT  // Booked but needs payment
+  CONFIRMED       // Paid and confirmed
+  CANCELLED      // Cancelled by user/staff
+  EXPIRED       // Past date
 }

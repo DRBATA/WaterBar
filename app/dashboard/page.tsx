@@ -1,159 +1,109 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth-context'
+import { useState } from 'react'
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { YachtBookingModal } from '@/components/modals/yacht-booking-modal'
+import { QRDrawer } from '@/components/qr-drawer'
 
-interface Booking {
-  id: string
+interface QRBooking {
+  code: string
+  experience: string
   date: string
+  time: string
 }
 
 export default function Dashboard() {
-  const { user, logout } = useAuth()
-  const router = useRouter()
-  const [bookings, setBookings] = useState<Booking[]>([])
-  const [loading, setLoading] = useState(true)
-  const [bookingDate, setBookingDate] = useState('')
-  const [bookingError, setBookingError] = useState('')
+  const { user } = useAuth()
+  const [showYachtModal, setShowYachtModal] = useState(false)
+  const [qrCodes, setQRCodes] = useState<QRBooking[]>([])
 
-  const fetchBookings = useCallback(async () => {
-    try {
-      const response = await fetch(`/api/bookings?userId=${user?.id}`)
-      const data = await response.json()
-      setBookings(data)
-    } catch (error) {
-      console.error('Failed to fetch bookings:', error)
-    } finally {
-      setLoading(false)
-    }
-  }, [user, setBookings, setLoading])
-
-  useEffect(() => {
-    if (!user) {
-      router.push('/')
+  const handleBookingComplete = (qrCode: string, experience: string, date: string, time: string) => {
+    // Check booking limit
+    if (qrCodes.length >= 3) {
+      alert('Maximum 3 bookings allowed at a time')
       return
     }
-    fetchBookings()
-  }, [user, router, fetchBookings])
 
-  const handleBooking = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!bookingDate) return
-    
-    setBookingError('')
-    setLoading(true)
-
-    try {
-      const [datePart, timePart] = bookingDate.split('T')
-      const [year, month, day] = datePart.split('-').map(Number)
-      const [hours, minutes] = timePart.split(':').map(Number)
-      
-      const selectedDate = new Date(year, month - 1, day, hours, minutes)
-      
-      if (isNaN(selectedDate.getTime())) {
-        throw new Error('Please select a valid date and time')
-      }
-
-      const now = new Date()
-      if (selectedDate < now) {
-        throw new Error('Please select a future date and time')
-      }
-
-      const response = await fetch('/api/bookings', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId: user?.id,
-          date: selectedDate.toISOString(),
-        }),
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to create booking')
-      }
-
-      setBookingDate('')
-      fetchBookings()
-      setBookingError('')
-    } catch (error) {
-      console.error('Booking error:', error)
-      setBookingError(error instanceof Error ? error.message : 'Failed to create booking')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  if (!user) {
-    return null
+    setQRCodes(prev => [...prev, { 
+      code: qrCode, 
+      experience, 
+      date, 
+      time
+    }])
   }
 
   return (
-    <div className="page-container">
-      <div className="content-wrapper">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl text-white">Welcome, {user.name}!</h1>
-          <Button 
-            onClick={() => {
-              logout()
-              router.push('/')
-            }}
-            variant="outline"
-            className="button-base"
-          >
-            Logout
-          </Button>
-        </div>
-
-        <div className="card mb-8">
-          <h2 className="text-xl text-white mb-4">Book a Session</h2>
-          <form onSubmit={handleBooking} className="space-y-4">
-            <Input
-              type="datetime-local"
-              value={bookingDate}
-              onChange={(e) => setBookingDate(e.target.value)}
-              className="input-field"
-              required
-            />
-            {bookingError && (
-              <div className="text-red-400 text-sm text-center">{bookingError}</div>
-            )}
-            <Button 
-              type="submit"
-              className="button-base w-full"
-              disabled={loading}
-            >
-              {loading ? 'Processing...' : 'Book Now'}
-            </Button>
-          </form>
-        </div>
-
-        <div className="card">
-          <h2 className="text-xl text-white mb-4">Your Bookings</h2>
-          {loading ? (
-            <p className="text-white/60">Loading...</p>
-          ) : bookings.length > 0 ? (
-            <div className="space-y-4">
-              {bookings.map(booking => (
-                <div 
-                  key={booking.id}
-                  className="bg-white/5 rounded p-4 text-white"
-                >
-                  {new Date(booking.date).toLocaleString()}
-                </div>
-              ))}
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800">
+      {/* Three Icons */}
+      <div className="max-w-7xl mx-auto p-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Yacht Booking */}
+          <div className="card hover:bg-white/5 transition-colors cursor-pointer group" 
+               onClick={() => setShowYachtModal(true)}>
+            <div className="p-6 text-center">
+              <div className="text-6xl mb-4">⛵</div>
+              <h3 className="text-xl font-medium text-white mb-2">Yacht Sessions</h3>
+              <p className="text-white/60 text-sm">
+                Book your next yacht experience
+              </p>
+              <Button 
+                variant="outline" 
+                className="mt-4 w-full button-base opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                View Schedule
+              </Button>
             </div>
-          ) : (
-            <p className="text-white/60">No bookings yet</p>
-          )}
+          </div>
+
+          {/* Water App */}
+          <div className="card hover:bg-white/5 transition-colors cursor-pointer group"
+               onClick={() => window.open('https://water-tracking-app.com', '_blank')}>
+            <div className="p-6 text-center">
+              <div className="text-6xl mb-4">💧</div>
+              <h3 className="text-xl font-medium text-white mb-2">Water App</h3>
+              <p className="text-white/60 text-sm">
+                Track your daily hydration
+              </p>
+              <Button 
+                variant="outline" 
+                className="mt-4 w-full button-base opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                Open App
+              </Button>
+            </div>
+          </div>
+
+          {/* Wellness Classes */}
+          <div className="card hover:bg-white/5 transition-colors cursor-pointer group">
+            <div className="p-6 text-center">
+              <div className="text-6xl mb-4">🧘‍♀️</div>
+              <h3 className="text-xl font-medium text-white mb-2">Classes</h3>
+              <p className="text-white/60 text-sm">
+                Browse and request class spots
+              </p>
+              <Button 
+                variant="outline" 
+                className="mt-4 w-full button-base opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                View Classes
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
+
+      {/* Modals */}
+      <YachtBookingModal 
+        isOpen={showYachtModal}
+        onClose={() => setShowYachtModal(false)}
+        onBookingComplete={(qrCode, experience, date, time) => {
+          handleBookingComplete(qrCode, experience, date, time)
+        }}
+      />
+
+      {/* QR Code Drawer */}
+      <QRDrawer qrCodes={qrCodes} />
     </div>
   )
 }

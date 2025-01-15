@@ -3,12 +3,19 @@
 import { useState } from 'react'
 import { Modal } from "@/components/ui/modal"
 import { Button } from "@/components/ui/button"
-import { Calendar } from '../../components/ui/calendar'
+import { Calendar } from '@/components/ui/calendar'
 import { format, isBefore, startOfToday } from 'date-fns'
+import QRCode from 'qrcode'
 
 interface YachtBookingModalProps {
   isOpen: boolean
   onClose: () => void
+  onBookingComplete?: (
+    qrCode: string,
+    experience: string,
+    date: string,
+    time: string
+  ) => void
 }
 
 // Define the yacht experiences
@@ -94,13 +101,12 @@ const getExperienceForDate = (date: Date | undefined): typeof experiences[0] | n
   return experiences[experienceIndex]
 }
 
-export function YachtBookingModal({ isOpen, onClose }: YachtBookingModalProps) {
+export function YachtBookingModal({ isOpen, onClose, onBookingComplete }: YachtBookingModalProps) {
   const [selectedDate, setSelectedDate] = useState<Date>()
   const [selectedExperience, setSelectedExperience] = useState<typeof experiences[0] | null>(null)
   const [loading, setLoading] = useState(false)
 
   const handleDateSelect = (date: Date | undefined) => {
-    // Don't allow selecting past dates
     if (date && isBefore(date, startOfToday())) {
       return
     }
@@ -118,21 +124,25 @@ export function YachtBookingModal({ isOpen, onClose }: YachtBookingModalProps) {
 
     setLoading(true)
     try {
-      const response = await fetch('/api/bookings', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          date: selectedDate,
-          experienceId: selectedExperience.id,
-        }),
+
+      // Generate QR code with booking details
+      const qrData = JSON.stringify({
+        experience: selectedExperience.name,
+        date: format(selectedDate, 'MMMM do, yyyy'),
+        time: selectedExperience.time
       })
 
-      if (!response.ok) {
-        throw new Error('Failed to book experience')
-      }
-
+      const qrCode = await QRCode.toDataURL(qrData)
+      
+      // Notify parent component with full details
+      onBookingComplete?.(
+        qrCode,
+        selectedExperience.name,
+        format(selectedDate, 'MMMM do, yyyy'),
+        selectedExperience.time
+      )
+      
+      // Close modal
       onClose()
     } catch (error) {
       console.error('Booking error:', error)
@@ -217,9 +227,9 @@ export function YachtBookingModal({ isOpen, onClose }: YachtBookingModalProps) {
                 </Button>
               </div>
             ) : (
-          <div className="flex items-center justify-center h-full text-white/60">
-            Select a date to view available experiences
-          </div>
+              <div className="flex items-center justify-center h-full text-white/60">
+                Select a date to view available experiences
+              </div>
             )}
           </div>
         </div>

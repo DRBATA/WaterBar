@@ -4,8 +4,8 @@ import { Modal } from '../ui/modal'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useState, useEffect } from 'react'
-import { useAuth } from '@/lib/auth-context'
 import { useRouter } from 'next/navigation'
+import { useAuth } from '@/lib/auth-context'
 
 interface AuthModalProps {
   isOpen: boolean
@@ -21,13 +21,20 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
     email: '',
     password: ''
   })
+  const [redirecting, setRedirecting] = useState(false)
 
-  // Close modal after successful login
+  // Handle successful login
   useEffect(() => {
-    if (user) {
+    if (user && !redirecting) {
+      console.log('🔐 Login successful, redirecting to dashboard')
+      setRedirecting(true)
       onClose()
+      // Small delay to avoid state updates during redirect
+      setTimeout(() => {
+        router.push('/dashboard')
+      }, 100)
     }
-  }, [user, onClose])
+  }, [user, router, onClose, redirecting])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -36,7 +43,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 
     try {
       await login(formData.email, formData.password)
-      // Routing will be handled by the effect when user state updates
+      // Modal and redirect handled by useEffect
     } catch (err) {
       console.error('Login error:', err)
       setError(
@@ -93,7 +100,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
         <Button 
           type="submit" 
           className="button-base w-full"
-          disabled={loading}
+          disabled={loading || redirecting}
         >
           {loading ? 'Processing...' : 'Login'}
         </Button>

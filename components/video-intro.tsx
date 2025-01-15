@@ -92,9 +92,12 @@ export function VideoIntro({ onEnter }: VideoIntroProps) {
       }, 360)
       
       // Start exit sequence
+      console.log('🎬 Starting text animation sequence')
       setTimeout(() => {
+        console.log('🎬 Starting exit animation')
         setExiting(true)
         setTimeout(() => {
+          console.log('🎬 Calling onEnter')
           onEnter()
         }, 1700)
       }, 730)
@@ -103,6 +106,7 @@ export function VideoIntro({ onEnter }: VideoIntroProps) {
 
   // Handle enter click
   const handleEnter = () => {
+    console.log('🎬 Enter button clicked')
     setShowText(true)
   }
 

@@ -26,28 +26,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     // Check for stored user data on load
-    const storedUser = localStorage.getItem('user')
-    const cookieUser = document.cookie
-      .split('; ')
-      .find(row => row.startsWith('user='))
-      ?.split('=')[1]
+    try {
+      // Try to get user from cookie first
+      const cookieValue = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('user='))
+        ?.split('=')[1]
 
-    if (cookieUser) {
-      try {
-        const userData = JSON.parse(decodeURIComponent(cookieUser))
+      if (cookieValue) {
+        const userData = JSON.parse(decodeURIComponent(cookieValue))
+        console.log('🍪 Found user in cookie:', userData.email)
         setUser(userData)
-      } catch (error) {
-        console.error('Failed to parse cookie user:', error)
+      } else {
+        // Fallback to localStorage
+        const storedValue = localStorage.getItem('user')
+        if (storedValue) {
+          const userData = JSON.parse(storedValue)
+          console.log('💾 Found user in storage:', userData.email)
+          setUser(userData)
+          // Sync cookie with localStorage
+          const encodedUser = encodeURIComponent(storedValue)
+          document.cookie = `user=${encodedUser}; path=/; max-age=2592000`
+        }
       }
-    } else if (storedUser) {
-      try {
-        const userData = JSON.parse(storedUser)
-        setUser(userData)
-        // Sync cookie with localStorage
-        document.cookie = `user=${JSON.stringify(userData)}; path=/; max-age=2592000`
-      } catch (error) {
-        console.error('Failed to parse stored user:', error)
-      }
+    } catch (error) {
+      console.error('Failed to restore user session:', error)
+      // Clear potentially corrupted data
+      localStorage.removeItem('user')
+      document.cookie = 'user=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;'
     }
     setIsLoading(false)
   }, [])
@@ -77,6 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string) => {
     try {
+      console.log('🔑 Attempting login:', email)
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
@@ -91,11 +98,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error(data.message || 'Login failed')
       }
 
-      // Store user in both localStorage and cookie
+      // Store user data
       const userData = data.user
+      console.log('✅ Login successful:', userData.email)
+      
+      // Save to state
       setUser(userData)
-      localStorage.setItem('user', JSON.stringify(userData))
-      document.cookie = `user=${JSON.stringify(userData)}; path=/; max-age=2592000` // 30 days
+      
+      // Save to localStorage
+      const userString = JSON.stringify(userData)
+      localStorage.setItem('user', userString)
+      
+      // Save to cookie (encoded to handle special characters)
+      const encodedUser = encodeURIComponent(userString)
+      document.cookie = `user=${encodedUser}; path=/; max-age=2592000` // 30 days
     } catch (error) {
       console.error('Login error:', error)
       throw error
@@ -103,9 +119,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const logout = () => {
-    // Clear user from both localStorage and cookie
+    console.log('👋 Logging out user:', user?.email)
+    // Clear user from state
     setUser(null)
+    // Clear localStorage
     localStorage.removeItem('user')
+    // Clear cookie
     document.cookie = 'user=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;'
   }
 
